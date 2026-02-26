@@ -27,7 +27,12 @@ abstract class AbstractHub
      * @param PipeObjectable $object
      * @return $this
      */
-    abstract function setObject(PipeObjectable $object): self;
+    public function setObject(PipeObjectable $object): self
+    {
+        $this->object = $object;
+
+        return $this;
+    }
 
     /**
      * Здесь можно расширить стандартный список пайпов с помощью дополнительной логики
@@ -81,6 +86,6 @@ abstract class AbstractHub
             return DB::transaction($pipeline);
         }
 
-        return $pipeline;
+        return $pipeline();
     }
 }

@@ -10,15 +10,23 @@
     },
     "authors": [
         {
-            "name": "yourCormorant"
+            "name": "Danil Kudryavtsev",
+            "role": "Developer"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
-        "php": "~8.1",
+        "php": "^8.1",
         "illuminate/pipeline": "^10.0|^11.0|^12.0",
         "illuminate/container": "^10.0|^11.0|^12.0",
         "illuminate/support": "^10.0|^11.0|^12.0",
         "illuminate/contracts": "^10.0|^11.0|^12.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Yourcormorant\\LaravelHubs\\Providers\\HubServiceProvider"
+            ]
+        }
     }
 }

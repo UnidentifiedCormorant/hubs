@@ -11,8 +11,8 @@ interface Pipelinable
      * Основой метод для абсолютно любого пайпа в рамках хабов
      *
      * @param PipeObjectable $data
-     * @param Closure $next
-     * @return Closure|PipeObjectable
+     * @param Closure(mixed): mixed $next
+     * @return Closure(mixed): mixed|PipeObjectable
      */
     public function handle(PipeObjectable $data, Closure $next): Closure|PipeObjectable;
 }
