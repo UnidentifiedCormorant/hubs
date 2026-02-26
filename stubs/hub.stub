@@ -1,0 +1,12 @@
+<?php
+
+namespace {{ namespace }};
+
+use Yourcormorant\LaravelHubs\Abstracts\AbstractHub;
+
+class {{ class }} extends AbstractHub
+{
+    protected array $pipes = [
+
+    ];
+}

@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Domain\DTO\Billionaire\StoreBillionaireData;
+use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
+use Yourcormorant\LaravelHubs\Abstracts\Pipelineable;
+use {{ objectPath }};
+use Closure;
+
+interface {{ name }} extends Pipelineable
+{
+    public function handle({{ objectClass }}|PipeObjectable $data, Closure $next): Closure|PipeObjectable;
+}

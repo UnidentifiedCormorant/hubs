@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ namespace }};
+
+use Yourcormorant\LaravelHubs\Abstracts\AbstractHub;
+use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
+use {{ objectPath }};
+
+class {{ class }} extends AbstractHub
+{
+    protected array $pipes = [
+
+    ];
+
+    function setObject({{ objectClass }}|PipeObjectable $object): AbstractHub
+    {
+        $this->object = $object;
+
+        return $this;
+    }
+}
