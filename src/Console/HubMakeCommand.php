@@ -9,30 +9,32 @@ class HubMakeCommand extends GeneratorCommand
 {
     use HubMakeable;
 
+    //Если true - будет подставляться stub для интерфейса
+    private bool $needInterfaceStub = false;
+
+    //Пространство имён + название класса объекта, с которым будет работать хаб, введённое пользователем
+    private ?string $objectPath = null;
+
     protected $signature = 'make:hub
                             {name}
                             {--object= : Класс, который будет использоваться в качестве объекта для пайплайна в хабе. Пример: --object="App\Entities\Entity"}
                             {--no-pipe-interface : Не генерировать интерфейс для будущих пайпов в хабе}';
 
-    protected $description = 'Сгенерировать файлы и каталоги для работы с новым хабом';
+    protected $description = 'Сгенерировать основные файлы для работы с новым хабом';
 
     protected function getDefaultNamespace($rootNamespace): string
     {
-        $normalizedClassName = strtolower($this->argument('name'));
-
-        //Формируем название дополнительной директории для хаба
-        if(str_contains($normalizedClassName, 'hub')){
-            $hubDir = ucfirst(strstr($normalizedClassName, 'hub', true));
-        } else {
-            $hubDir = ucfirst($normalizedClassName);
-        }
-
-        return $rootNamespace.'\Hubs\\'.$hubDir;
+        //Формируем путь с дополнительной директорией для хаба
+        return $rootNamespace.'\Hubs\\'.$this->getHubName($this->argument('name'));
     }
 
     protected function getStub(): string
     {
-        if($this->option('object')){
+        if($this->needInterfaceStub){
+            return $this->resolveHubStubPath('/stubs/pipeline-interface-with-object-indication.stub');
+        }
+
+        if($this->objectPath){
             return $this->resolveHubStubPath('/stubs/hub-with-object-indication.stub');
         }
 
@@ -41,13 +43,13 @@ class HubMakeCommand extends GeneratorCommand
 
     protected function buildClass($name): string
     {
-        if($objectPath = $this->option('object')){
+        if($this->objectPath){
 
             return $this->buildClassWithReplacing(
                 [
                     //Получаем название класса объекта
-                    '{{ objectClass }}' => ltrim(strrchr($objectPath, '\\'), '\\'),
-                    '{{ objectPath }}' => $objectPath,
+                    '{{ objectClass }}' => $this->getObjectClass($this->objectPath),
+                    '{{ objectPath }}' => $this->objectPath,
                 ],
                 $name
             );
@@ -58,37 +60,49 @@ class HubMakeCommand extends GeneratorCommand
 
     public function handle(): ?bool
     {
-        //TODO: Спрашивать про объект, если он не передан
-        parent::handle();
-
-        //TODO: Если объект не передан - создаём базовый интерфейс без объекта
-        if(
-            !$this->option('no-pipe-interface') &&
-            $this->option('object') &&
-            $this->confirm('Создать интерфейс для будущих пайпов этого хаба?', false))
-        {
-            $interfacePath = $this->getPath($this->qualifyClass('Abstracts/TestPipelinable'));
-
-            $this->makeDirectory($interfacePath);
-
-            //TODO: Вынести в отдельную команду
-            //Создаём файл интерфейса
-            $this->files->put(
-                $interfacePath,
-                $this->buildClassWithReplacing(
-                    [
-                        '{{ name }}' => 'iiiiiiiiiiiiiii',
-                        '{{ namespace }}' => 'oooooooooooo',
-                        '{{ objectPath }}' => 'aaaaaaaaaa',
-                        '{{ objectClass }}' => 'mmmmmmmmmm'
-                    ],
-                    $this->resolveHubStubPath('/stubs/pipeline-interface.stub'),
-                )
-            );
+        $this->objectPath = $this->option('object');
+        if(!$this->objectPath){
+            $this->objectPath = trim($this->ask('Введите пространство имён + название класса объекта, с которым будет работать хаб (по умолчанию null). Пример: App\Entities\EntityClassName'),'"');
         }
 
-        //TODO: Создать директорию под пайпы
+        if(parent::handle() === false){
+            return false;
+        }
 
-        return null;
+        if(
+            !$this->option('no-pipe-interface') &&
+            $this->objectPath &&
+            $this->confirm('Создать интерфейс для будущих пайпов этого хаба?', false))
+        {
+            $this->createInterfaceFile();
+        }
+
+        return true;
+    }
+
+    private function createInterfaceFile(): void
+    {
+        $name = $this->getHubName($this->argument('name')).'Pipelineable';
+        $path = $this->getPath($this->qualifyClass("Abstracts/$name"));
+
+        $this->makeDirectory($path);
+
+        $this->needInterfaceStub = true;
+
+        //Генерируем файл интерфейса
+        $this->files->put(
+            $path,
+            $this->buildClassWithReplacing(
+                [
+                    '{{ name }}' => $name,
+                    '{{ interfaceNamespace }}' => $this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\Abstracts',
+                    '{{ objectPath }}' => $this->objectPath,
+                    '{{ objectClass }}' => $this->getObjectClass($this->objectPath)
+                ],
+                $name,
+            )
+        );
+
+        $this->components->info(sprintf('%s [%s] created successfully.', '', $path));
     }
 }

@@ -1,8 +1,7 @@
 <?php
 
-namespace {{ namespace }};
+namespace {{ interfaceNamespace }};
 
-use App\Domain\DTO\Billionaire\StoreBillionaireData;
 use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
 use Yourcormorant\LaravelHubs\Abstracts\Pipelineable;
 use {{ objectPath }};

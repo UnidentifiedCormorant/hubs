@@ -5,7 +5,7 @@ namespace Yourcormorant\LaravelHubs\Abstracts;
 use Closure;
 use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
 
-interface Pipelinable
+interface Pipelineable
 {
     /**
      * Основой метод для абсолютно любого пайпа в рамках хабов
