@@ -16,9 +16,10 @@ class HubMakeCommand extends GeneratorCommand
     private ?string $objectPath = null;
 
     protected $signature = 'make:hub
-                            {name}
+                            {name : Название хаба}
                             {--object= : Класс, который будет использоваться в качестве объекта для пайплайна в хабе. Пример: --object="App\Entities\Entity"}
-                            {--no-pipe-interface : Не генерировать интерфейс для будущих пайпов в хабе}';
+                            {--no-pipe-interface : Не генерировать интерфейс для будущих пайпов в хабе}
+                            {--no-object : Не указывать объект для хаба}';
 
     protected $description = 'Сгенерировать основные файлы для работы с новым хабом';
 
@@ -48,7 +49,7 @@ class HubMakeCommand extends GeneratorCommand
             return $this->buildClassWithReplacing(
                 [
                     //Получаем название класса объекта
-                    '{{ objectClass }}' => $this->getObjectClass($this->objectPath),
+                    '{{ objectClass }}' => $this->getClassFromNamespace($this->objectPath),
                     '{{ objectPath }}' => $this->objectPath,
                 ],
                 $name
@@ -61,7 +62,7 @@ class HubMakeCommand extends GeneratorCommand
     public function handle(): ?bool
     {
         $this->objectPath = $this->option('object');
-        if(!$this->objectPath){
+        if(!$this->objectPath && !$this->option('no-object')){
             $this->objectPath = trim($this->ask('Введите пространство имён + название класса объекта, с которым будет работать хаб (по умолчанию null). Пример: App\Entities\EntityClassName'),'"');
         }
 
@@ -97,7 +98,7 @@ class HubMakeCommand extends GeneratorCommand
                     '{{ name }}' => $name,
                     '{{ interfaceNamespace }}' => $this->getDefaultNamespace(trim($this->rootNamespace(), '\\')).'\Abstracts',
                     '{{ objectPath }}' => $this->objectPath,
-                    '{{ objectClass }}' => $this->getObjectClass($this->objectPath)
+                    '{{ objectClass }}' => $this->getClassFromNamespace($this->objectPath)
                 ],
                 $name,
             )

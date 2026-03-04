@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+{{ uses }}
+use Closure;
+
+class {{ class }}{{ interfaceImplements }}
+{
+    public function handle({{ objectUnionType }} $data, Closure $next): Closure|PipeObjectable
+    {
+        //
+
+        return $next($data);
+    }
+}
+

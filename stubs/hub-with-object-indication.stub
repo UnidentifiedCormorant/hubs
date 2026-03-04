@@ -12,10 +12,8 @@ class {{ class }} extends AbstractHub
 
     ];
 
-    function setObject({{ objectClass }}|PipeObjectable $object): AbstractHub
+    public function setObject({{ objectClass }}|PipeObjectable $object): AbstractHub
     {
-        $this->object = $object;
-
-        return $this;
+        return parent::setObject($object);
     }
 }

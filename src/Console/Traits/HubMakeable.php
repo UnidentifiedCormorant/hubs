@@ -56,11 +56,26 @@ trait HubMakeable
     /**
      * Получить название класса из аргумента для объекта
      *
-     * @param string $objectPath
+     * @param string $namespace
      * @return string
      */
-    private function getObjectClass(string $objectPath): string
+    private function getClassFromNamespace(string $namespace): string
     {
-        return ltrim(strrchr($objectPath, '\\'), '\\');
+        return ltrim(strrchr($namespace, '\\'), '\\');
+    }
+
+    /**
+     * Получить неймспейс без названия класса
+     *
+     * @param string $namespace
+     * @return string
+     */
+    private function getPathFromNamespace(string $namespace): string
+    {
+        return str_replace(
+            '\\'.$this->getClassFromNamespace($namespace),
+            '',
+            $namespace
+        );
     }
 }

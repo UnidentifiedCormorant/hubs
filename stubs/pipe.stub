@@ -1,0 +1,17 @@
+<?php
+
+namespace {{ namespace }};
+
+use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
+use Closure;
+
+class {{ class }}
+{
+    public function handle(PipeObjectable $data, Closure $next): Closure|PipeObjectable
+    {
+        //
+
+        return $next($data);
+    }
+}
+
