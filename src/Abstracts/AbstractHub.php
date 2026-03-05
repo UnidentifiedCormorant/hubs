@@ -35,22 +35,12 @@ abstract class AbstractHub
     }
 
     /**
-     * Здесь можно расширить стандартный список пайпов с помощью дополнительной логики
-     *
-     * @param PipeObjectable $object
-     * @return void
-     */
-    protected function expandPipes(PipeObjectable $object): void {}
-
-    /**
-     * Запустить пайплайн
+     * Подготовить пайплайн к запуску
      *
      * @return $this
      */
-    public function initPipeline(): self
+    public function preparePipeline(): self
     {
-        $this->expandPipes($this->object);
-
         $this->pipeline
             ->send($this->object)
             ->through($this->pipes);
@@ -69,17 +59,17 @@ abstract class AbstractHub
     }
 
     /**
-     * Сахар, если нужно вызвать методы в штатном режиме
+     * Выполнить пайплайн из хаба и получить результат
      *
      * @param PipeObjectable $object
      * @param bool $withTransaction
      * @return mixed
      */
-    public function __invoke(PipeObjectable $object, bool $withTransaction = false): mixed
+    public function init(PipeObjectable $object, bool $withTransaction = false): mixed
     {
         $pipeline = fn () => $this
             ->setObject($object)
-            ->initPipeline()
+            ->preparePipeline()
             ->getResult();
 
         if($withTransaction){
@@ -87,5 +77,17 @@ abstract class AbstractHub
         }
 
         return $pipeline();
+    }
+
+    /**
+     * Сахар, если хотим вызвать как функцию
+     *
+     * @param PipeObjectable $object
+     * @param bool $withTransaction
+     * @return mixed
+     */
+    public function __invoke(PipeObjectable $object, bool $withTransaction = false): mixed
+    {
+        return $this->init($object, $withTransaction);
     }
 }

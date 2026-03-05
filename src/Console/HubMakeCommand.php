@@ -25,6 +25,10 @@ class HubMakeCommand extends GeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace): string
     {
+        if(str_contains($this->argument('name'), '/') || str_contains($this->argument('name'), '\\')){
+            return $rootNamespace.'\Hubs';
+        }
+
         //Формируем путь с дополнительной директорией для хаба
         return $rootNamespace.'\Hubs\\'.$this->getHubName($this->argument('name'));
     }
