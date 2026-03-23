@@ -1,0 +1,16 @@
+<?php
+
+namespace {{ namespace }};
+
+use Yourcormorant\LaravelHubs\Abstracts\PositionHubbable;
+use Yourcormorant\LaravelHubs\Abstracts\AbstractPositionableHub;
+
+class {{ class }} extends AbstractPositionableHub implements PositionHubbable
+{
+    protected function getPipes(): array
+    {
+        return [
+            //
+        ];
+    }
+}

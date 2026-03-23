@@ -3,10 +3,14 @@
 namespace {{ namespace }};
 
 use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
+use Yourcormorant\LaravelHubs\Abstracts\Positionable;
+use Yourcormorant\LaravelHubs\Traits\WithPositioning;
 use Closure;
 
-class {{ class }}
+class {{ class }} implements Positionable
 {
+    use WithPositioning;
+
     public function handle(PipeObjectable $data, Closure $next): Closure|PipeObjectable
     {
         //

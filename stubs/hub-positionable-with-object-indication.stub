@@ -2,12 +2,13 @@
 
 namespace {{ namespace }};
 
-use Yourcormorant\LaravelHubs\Abstracts\Hubbable;
+use Yourcormorant\LaravelHubs\Abstracts\PositionHubbable;
 use Yourcormorant\LaravelHubs\Abstracts\AbstractHub;
+use Yourcormorant\LaravelHubs\Abstracts\AbstractPositionableHub;
 use Yourcormorant\LaravelHubs\Abstracts\PipeObjectable;
 use {{ objectPath }};
 
-class {{ class }} extends AbstractHub implements Hubbable
+class {{ class }} extends AbstractPositionableHub implements PositionHubbable
 {
     protected function getPipes(): array
     {

@@ -2,11 +2,15 @@
 
 namespace {{ namespace }};
 
+use Yourcormorant\LaravelHubs\Abstracts\Hubbable;
 use Yourcormorant\LaravelHubs\Abstracts\AbstractHub;
 
-class {{ class }} extends AbstractHub
+class {{ class }} extends AbstractHub implements Hubbable
 {
-    protected array $pipes = [
-
-    ];
+    protected function getPipes(): array
+    {
+        return [
+            //
+        ];
+    }
 }

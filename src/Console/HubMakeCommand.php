@@ -18,6 +18,7 @@ class HubMakeCommand extends GeneratorCommand
     protected $signature = 'make:hub
                             {name : Название хаба}
                             {--object= : Класс, который будет использоваться в качестве объекта для пайплайна в хабе. Пример: --object="App\Entities\Entity"}
+                            {--P|positionable : Хаб будет автоматически сортировать пайпы по их позиции перед запуском}
                             {--no-pipe-interface : Не генерировать интерфейс для будущих пайпов в хабе}
                             {--no-object : Не указывать объект для хаба}';
 
@@ -40,7 +41,14 @@ class HubMakeCommand extends GeneratorCommand
         }
 
         if($this->objectPath){
+            if($this->option('positionable')){
+                return $this->resolveHubStubPath('/stubs/hub-positionable-with-object-indication.stub');
+            }
             return $this->resolveHubStubPath('/stubs/hub-with-object-indication.stub');
+        }
+
+        if($this->option('positionable')){
+            return $this->resolveHubStubPath('/stubs/hub-positionable.stub');
         }
 
         return $this->resolveHubStubPath('/stubs/hub.stub');

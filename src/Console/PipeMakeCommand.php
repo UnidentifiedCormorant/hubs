@@ -6,6 +6,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionUnionType;
+use Yourcormorant\LaravelHubs\Abstracts\AbstractPositionableHub;
 use Yourcormorant\LaravelHubs\Console\Traits\HubMakeable;
 use Illuminate\Console\GeneratorCommand;
 
@@ -19,12 +20,16 @@ class PipeMakeCommand extends GeneratorCommand
     /** @var array<string, string> */
     private array $replacements = [];
 
+    //Определяет, будет ли пайп уметь работать со своей позицией в хабе
+    private bool $isPositionable = false;
+
     //Определяет, используются ли объекты в сигнатуре метода пайпа
     private bool $hasObjects = false;
 
     protected $signature = 'make:pipe
                             {name : Название пайпа}
                             {hub? : Название хаба, для которого будет создан пайп. Пример 1: CreateOrderHub, Пример 2: "App\Hubs\CreateOrder\CreateOrderHub"}
+                            {--P|positionable : Пайп будет уметь работать со своей позицией, если }
                             {--free : Пайп не будет привязан к хабу}';
 
     protected $description = 'Сгенерировать пайп для хаба';
@@ -40,9 +45,18 @@ class PipeMakeCommand extends GeneratorCommand
 
     protected function getStub(): string
     {
-        return !$this->hubNamespace
-            ? $this->resolveHubStubPath('/stubs/pipe.stub')
-            : $this->resolveHubStubPath('/stubs/pipe-completed.stub');
+        if($this->hubNamespace){
+            if($this->isPositionable){
+                return $this->resolveHubStubPath('/stubs/pipe-positionable-completed.stub');
+            }
+            return $this->resolveHubStubPath('/stubs/pipe-completed.stub');
+        }
+
+        if($this->isPositionable){
+            return $this->resolveHubStubPath('/stubs/pipe-positionable.stub');
+        }
+
+        return $this->resolveHubStubPath('/stubs/pipe.stub');
     }
 
     protected function buildClass($name): string
@@ -58,6 +72,15 @@ class PipeMakeCommand extends GeneratorCommand
 
         if($this->hubNamespace){
             $this->resolveReplacements();
+        }
+
+        $this->isPositionable = $this->option('positionable');
+
+        if(!$this->isPositionable && $this->hubNamespace) {
+            $this->isPositionable = str_contains(
+                file_get_contents((new ReflectionClass($this->hubNamespace))->getFileName()),
+                'extends AbstractPositionableHub'
+            );
         }
 
         return parent::handle();
